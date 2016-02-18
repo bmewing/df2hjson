@@ -9,7 +9,7 @@ dndTree <- function(json, width = NULL, height = NULL) {
 
   # forward options using x
   x = list(
-    message = message
+    data = json
   )
 
   # create widget
@@ -35,4 +35,18 @@ dndTreeOutput <- function(outputId, width = '100%', height = '400px'){
 renderDndTree <- function(expr, env = parent.frame(), quoted = FALSE) {
   if (!quoted) { expr <- substitute(expr) } # force quoted
   shinyRenderWidget(expr, dndTreeOutput, env, quoted = TRUE)
+}
+
+#' custom html function for dndTree
+#' @import htmltools
+dndTree_html <- function(id, style, class, ...){
+  tagList(
+    tags$div( id = id, class = class, style = style, style="position:relative;"
+      ,tags$div(
+        tags$div(class = "dndTree-main"
+          ,tags$div(class = "tree-container")
+        )
+      )
+    )
+  )
 }

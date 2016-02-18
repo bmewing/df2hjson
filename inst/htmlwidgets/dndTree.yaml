@@ -10,3 +10,8 @@ dependencies:
     src: htmlwidgets/lib
     script:
       - jquery-1.10.2.min.js
+  - name: dndTree
+    version: 1
+    src: htmlwidgets/lib
+    script:
+      - dndTree.js

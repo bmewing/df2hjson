@@ -1,7 +1,6 @@
-// Get JSON data
-treeJSON = d3.json("flare.json", function(error, treeData) {
+function makeTree(treeData,el){
+    //d3.select(el).select(".dndTree-chart").remove();
 
-    // Calculate total nodes, max label length
     var totalNodes = 0;
     var maxLabelLength = 0;
     // variables for drag/drop
@@ -16,8 +15,8 @@ treeJSON = d3.json("flare.json", function(error, treeData) {
     var root;
 
     // size of the diagram
-    var viewerWidth = $(document).width();
-    var viewerHeight = $(document).height();
+    var viewerWidth = el.getBoundingClientRect().width;
+    var viewerHeight = el.getBoundingClientRect().height;
 
     var tree = d3.layout.tree()
         .size([viewerHeight, viewerWidth]);
@@ -144,7 +143,7 @@ treeJSON = d3.json("flare.json", function(error, treeData) {
     }
 
     // define the baseSvg, attaching a class for styling and the zoomListener
-    var baseSvg = d3.select("#tree-container").append("svg")
+    var baseSvg = d3.select(el).select(".tree-container").append("svg")
         .attr("width", viewerWidth)
         .attr("height", viewerHeight)
         .attr("class", "overlay")
@@ -367,7 +366,7 @@ treeJSON = d3.json("flare.json", function(error, treeData) {
             // d.y = (d.depth * 500); //500px per level.
         });
 
-        // Update the nodesâ€¦
+        // Update the nodes…
         node = svgGroup.selectAll("g.node")
             .data(nodes, function(d) {
                 return d.id || (d.id = ++i);
@@ -461,7 +460,7 @@ treeJSON = d3.json("flare.json", function(error, treeData) {
         nodeExit.select("text")
             .style("fill-opacity", 0);
 
-        // Update the linksâ€¦
+        // Update the links…
         var link = svgGroup.selectAll("path.link")
             .data(links, function(d) {
                 return d.target.id;
@@ -519,4 +518,4 @@ treeJSON = d3.json("flare.json", function(error, treeData) {
     // Layout the tree initially and center on the root node.
     update(root);
     centerNode(root);
-});
+}
