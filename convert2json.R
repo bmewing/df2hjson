@@ -1,6 +1,7 @@
 library(dplyr)
 library(magrittr)
 library(stringr)
+library(jsonlite)
 
 convert2json = function(d){
   if(!is.character(d)){
@@ -32,16 +33,15 @@ convert2json = function(d){
   if(!all(is.na(dframe[[2]][dframe[[1]] == dframe[[1]][1]]))){
     json = sprintf("%s{'name':'%s','children':[",json,dframe[[1]][1])
   } else {
-    json = sprintf("%s{'name':'%s'}",json,dframe[[1]][1])
+    json = sprintf("%s{'name':'%s','size':10}",json,dframe[[1]][1])
   }
   
   cr = 1
   cc = 2
   done = 0
   while(done == 0){
-    print(c(cr,cc))
     if(cc == ncol(dframe)){
-      json = sprintf("%s,{'name':'%s'}",json,dframe[[cc]][cr])
+      json = sprintf("%s,{'name':'%s','size':10}",json,dframe[[cc]][cr])
       if(cr == nrow(dframe)){
         json = sprintf("%s%s",json,paste(rep("]}",ncol(dframe)),collapse=""))
         done = 1
@@ -67,13 +67,16 @@ convert2json = function(d){
     }
   }
   json = str_replace_all(json,pattern = "\\[,","\\[")
-  return(json)
+  json = str_replace_all(json,pattern = "'","\"")
+  return(jsonlite::fromJSON(json) %>% jsonlite::toJSON(.))
 }
 
 data(mtcars)
 nd = mtcars %>%
   mutate(mpg = cut(mpg,c(floor(min(.$mpg)),15,20,25,ceiling(max(.$mpg))),include.lowest = T)) %>% 
+  #mutate(mpg = as.numeric(mpg)) %>% 
   mutate(am = ifelse(am == 0, "Automatic","Manual")) %>% 
   select(am,gear,mpg,carb,cyl)
 
-convert2json("nd")
+json = convert2json("nd")
+json
