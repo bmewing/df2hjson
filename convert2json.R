@@ -21,7 +21,7 @@ convert2json = function(d){
   n = names(dframe)
   command = paste0("dframe %<>% arrange(",paste(n,collapse=","),")")
   eval(parse(text = command))
-  
+  dframe <<- dframe
   
   json = sprintf("{'name':'%s','children':[",d)
   if(ncol(dframe)==1){
@@ -39,6 +39,7 @@ convert2json = function(d){
   cc = 2
   done = 0
   while(done == 0){
+    print(c(cr,cc))
     if(cc == ncol(dframe)){
       json = sprintf("%s,{'name':'%s'}",json,dframe[[cc]][cr])
       if(cr == nrow(dframe)){
@@ -47,6 +48,17 @@ convert2json = function(d){
       } else if(any(dframe[cr+1,1:(cc-1)] != dframe[cr,1:(cc-1)])){
         json = sprintf("%s]}",json)
         cc = cc - 1
+        back = 0
+        while(back == 0){
+          if(cc == 1){
+            back = 1
+          } else if(any(dframe[cr+1,1:(cc-1)] != dframe[cr,1:(cc-1)])){
+            json = sprintf("%s]}",json)
+            cc = cc - 1
+          } else {
+            back = 1
+          }
+        }
       }
       cr = cr + 1
     } else {
@@ -62,6 +74,6 @@ data(mtcars)
 nd = mtcars %>%
   mutate(mpg = cut(mpg,c(floor(min(.$mpg)),15,20,25,ceiling(max(.$mpg))),include.lowest = T)) %>% 
   mutate(am = ifelse(am == 0, "Automatic","Manual")) %>% 
-  select(am,gear,mpg)#select(am,gear,carb,cyl,mpg)
+  select(am,gear,mpg,carb,cyl)
 
 convert2json("nd")
