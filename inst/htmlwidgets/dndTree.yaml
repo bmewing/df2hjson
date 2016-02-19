@@ -15,3 +15,8 @@ dependencies:
     src: htmlwidgets/lib
     script:
       - dndTree.js
+  - name: styling
+    version: 1
+    src: htmlwidgets/lib
+    stylesheet:
+      - needed.css

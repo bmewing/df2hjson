@@ -17,6 +17,7 @@ function makeTree(treeData,el){
     // size of the diagram
     var viewerWidth = el.getBoundingClientRect().width;
     var viewerHeight = el.getBoundingClientRect().height;
+    console.log(el.getBoundingClientRect());
 
     var tree = d3.layout.tree()
         .size([viewerHeight, viewerWidth]);
