@@ -1,9 +1,20 @@
-library(dplyr)
-library(magrittr)
-library(stringr)
-library(jsonlite)
+#' Converts data frame to hierarchical JSON
+#'
+#' @param d A length 1 character vector contain the name of the data frame to be converted
+#' @return Hierarchical JSON object.
+#' @details
+#' Function assumes the order of the columns is the hierarchical order
+#' @examples
+#' data(mtcars)
+#' nd = mtcars %>%
+#'   dplyr::mutate(mpg = cut(mpg,c(floor(min(.$mpg)),15,20,25,ceiling(max(.$mpg))),include.lowest = T)) %>%
+#'   dplyr::mutate(am = ifelse(am == 0, "Automatic","Manual")) %>%
+#'   dplyr::select(am,gear,mpg,carb,cyl)
 
-convert2json = function(d){
+#' json = df2json("nd")
+#' json
+#' @export
+df2json = function(d){
   if(!is.character(d)){
     stop("Pass in the name of the data to use, not the data itself")
   }
@@ -14,28 +25,28 @@ convert2json = function(d){
   if(!any(class(dframe) == "data.frame")){
     stop("Only data frames are supported")
   }
-  dframe %<>% 
-    distinct()
+  dframe %<>%
+    dplyr::distinct()
   if(nrow(dframe) == 1){
     stop("Not enough data to make a tree")
   }
   n = names(dframe)
-  command = paste0("dframe %<>% arrange(",paste(n,collapse=","),")")
+  command = paste0("dframe %<>% dplyr::arrange(",paste(n,collapse=","),")")
   eval(parse(text = command))
   dframe <<- dframe
-  
+
   json = sprintf("{'name':'%s','children':[",d)
   if(ncol(dframe)==1){
     json = sprintf("%s%s]}",json,paste("{'name':'",dframe[[1]],"'}",collapse=",",sep=""))
     return(json)
   }
-  
+
   if(!all(is.na(dframe[[2]][dframe[[1]] == dframe[[1]][1]]))){
     json = sprintf("%s{'name':'%s','children':[",json,dframe[[1]][1])
   } else {
     json = sprintf("%s{'name':'%s','size':10}",json,dframe[[1]][1])
   }
-  
+
   cr = 1
   cc = 2
   done = 0
@@ -66,17 +77,7 @@ convert2json = function(d){
       cc = cc + 1
     }
   }
-  json = str_replace_all(json,pattern = "\\[,","\\[")
-  json = str_replace_all(json,pattern = "'","\"")
+  json = stringr::str_replace_all(json,pattern = "\\[,","\\[")
+  json = stringr::str_replace_all(json,pattern = "'","\"")
   return(jsonlite::fromJSON(json) %>% jsonlite::toJSON(.))
 }
-
-data(mtcars)
-nd = mtcars %>%
-  mutate(mpg = cut(mpg,c(floor(min(.$mpg)),15,20,25,ceiling(max(.$mpg))),include.lowest = T)) %>% 
-  #mutate(mpg = as.numeric(mpg)) %>% 
-  mutate(am = ifelse(am == 0, "Automatic","Manual")) %>% 
-  select(am,gear,mpg,carb,cyl)
-
-json = convert2json("nd")
-json
