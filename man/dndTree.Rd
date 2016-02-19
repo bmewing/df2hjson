@@ -4,7 +4,7 @@
 \alias{dndTree}
 \title{<Add Title>}
 \usage{
-dndTree(json, width = NULL, height = NULL)
+dndTree(json, width = NULL, height = NULL, fHeight = 400)
 }
 \description{
 <Add Description>

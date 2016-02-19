@@ -1,6 +1,5 @@
-function makeTree(treeData,el){
+function makeTree(treeData,el,fHeight){
     //d3.select(el).select(".dndTree-chart").remove();
-
     var totalNodes = 0;
     var maxLabelLength = 0;
     // variables for drag/drop
@@ -17,7 +16,11 @@ function makeTree(treeData,el){
     // size of the diagram
     var viewerWidth = el.getBoundingClientRect().width;
     var viewerHeight = el.getBoundingClientRect().height;
-    console.log(el.getBoundingClientRect());
+    if (viewerHeight == 0) {
+        viewerHeight = fHeight;
+    }
+    console.log(viewerHeight);
+    console.log(viewerWidth);
 
     var tree = d3.layout.tree()
         .size([viewerHeight, viewerWidth]);

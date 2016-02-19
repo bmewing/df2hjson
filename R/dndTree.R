@@ -5,11 +5,12 @@
 #' @import htmlwidgets
 #'
 #' @export
-dndTree <- function(json, width = NULL, height = NULL) {
+dndTree <- function(json, width = NULL, height = NULL, fHeight = 400) {
 
   # forward options using x
   x = list(
-    data = json
+    data = json,
+    fHeight = fHeight
   )
 
   # create widget
